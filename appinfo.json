@@ -1,0 +1,52 @@
+{
+    "appKeys": {
+        "COLORS_KEY": 3,
+        "COLOR_KEY": 1,
+        "KEY_COLOR": 0,
+        "KEY_COLORS": 2
+    },
+    "capabilities": [
+        "configurable"
+    ],
+    "companyName": "PALIANTech Ent.",
+    "longName": "Blue Futuristic",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "characterRegex": "[A-Z0-9: .]",
+                "file": "fonts/TrekTNGMonitors2A.ttf",
+                "name": "FONT_TNGMONITORSA_REGULAR_25",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[A-Z0-9: .]",
+                "file": "fonts/TrekTNGMonitors2A.ttf",
+                "name": "FONT_TNGMONITORSA_REGULAR_75",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[A-Z0-9: .]",
+                "file": "fonts/TrekTNGMonitorsS.ttf",
+                "name": "FONT_TNGMONITORS_REGULAR_25",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[0-9:.]",
+                "file": "fonts/TrekTNGMonitors.ttf",
+                "name": "FONT_TNGMONITOR_REGULAR_75",
+                "type": "font"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Blue Futuristic",
+    "targetPlatforms": [
+        "basalt"
+    ],
+    "uuid": "5bb1b762-ed0a-42f5-8ac0-de98dd435d28",
+    "versionLabel": "4.5",
+    "watchapp": {
+        "watchface": true
+    }
+}
