@@ -1,8 +1,10 @@
 {
     "appKeys": {
+        "COLOR1_KEY": 5,
         "COLORS_KEY": 3,
         "COLOR_KEY": 1,
         "KEY_COLOR": 0,
+        "KEY_COLOR1": 4,
         "KEY_COLORS": 2
     },
     "capabilities": [
@@ -45,7 +47,7 @@
         "basalt"
     ],
     "uuid": "5bb1b762-ed0a-42f5-8ac0-de98dd435d28",
-    "versionLabel": "4.5",
+    "versionLabel": "4.8",
     "watchapp": {
         "watchface": true
     }

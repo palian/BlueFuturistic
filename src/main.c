@@ -5,6 +5,8 @@
 #define COLOR_KEY 1
 #define KEY_COLORS 2
 #define COLORS_KEY 3
+#define KEY_COLOR1 4
+#define COLOR1_KEY 5
   
 char *upcase(char *str)
 {
@@ -22,13 +24,29 @@ static void line_layer_update_callback(Layer *layer, GContext* ctx)
   if (persist_exists(COLORS_KEY)) 
 {
   char colorname[20];
-  persist_read_string(COLORS_KEY, colorname, sizeof(colorname));
-  if(strcmp(colorname, "GColorWhite") == 0){  graphics_context_set_fill_color(ctx, GColorWhite);}
-  else {  graphics_context_set_fill_color(ctx, GColorBlack);}
+  persist_read_string(COLORS_KEY, colorname, sizeof(colorname));  
+      if(strcmp(colorname, "1") == 0){  graphics_context_set_fill_color(ctx, GColorPictonBlue);}
+      else if(strcmp(colorname, "2") == 0){  graphics_context_set_fill_color(ctx, GColorDukeBlue);}
+      else if(strcmp(colorname, "3") == 0){  graphics_context_set_fill_color(ctx, GColorOxfordBlue);}
+      else if(strcmp(colorname, "4") == 0){  graphics_context_set_fill_color(ctx, GColorWhite);}
+      else if(strcmp(colorname, "5") == 0){  graphics_context_set_fill_color(ctx, GColorLightGray);}
+      else if(strcmp(colorname, "6") == 0){  graphics_context_set_fill_color(ctx, GColorBlack);}
+      else if(strcmp(colorname, "7") == 0){  graphics_context_set_fill_color(ctx, GColorYellow);}
+      else if(strcmp(colorname, "8") == 0){  graphics_context_set_fill_color(ctx, GColorChromeYellow);}
+      else if(strcmp(colorname, "9") == 0){  graphics_context_set_fill_color(ctx, GColorRed);}
+      else if(strcmp(colorname, "10") == 0){  graphics_context_set_fill_color(ctx, GColorDarkCandyAppleRed);}
+      else if(strcmp(colorname, "11") == 0){  graphics_context_set_fill_color(ctx, GColorBrightGreen);}
+      else if(strcmp(colorname, "12") == 0){  graphics_context_set_fill_color(ctx, GColorGreen);}
+      else if(strcmp(colorname, "13") == 0){  graphics_context_set_fill_color(ctx, GColorIslamicGreen);}
+      else if(strcmp(colorname, "14") == 0){  graphics_context_set_fill_color(ctx, GColorVividViolet);}
+      else if(strcmp(colorname, "15") == 0){  graphics_context_set_fill_color(ctx, GColorPurple);}
+      else if(strcmp(colorname, "16") == 0){  graphics_context_set_fill_color(ctx, GColorImperialPurple);}
+    else {  graphics_context_set_fill_color(ctx, GColorBlack);}
+    
 }
   else
   {  
-    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_context_set_fill_color(ctx, GColorWhite);
   } //sets color of top block
   graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
 }  
@@ -40,10 +58,13 @@ static void update_time() {
 
   // Create a long-lived buffer
   static char buffer[] = "00:00";
-  static char buffer2[] = "XXXXXXXXX 00"; //Month Date
+  static char buffer2[] = "XXXXXXXXX"; //Month Date
+  static char buffer2A[] = "00"; //Month Date Number
   static char buffer3[] = "XXXXXXXXX"; //Day of Week
 
-  strftime(buffer2, sizeof(buffer2), "%B %e", tick_time);
+  strftime(buffer2, sizeof(buffer2), "%B", tick_time);
+
+  strftime(buffer2A, sizeof(buffer2A), "%e", tick_time);
 
   upcase(buffer2);
 
@@ -70,6 +91,7 @@ static void update_time() {
   
   // Display this time on the TextLayer
   text_layer_set_text(s_time_layer2, buffer2);
+  text_layer_set_text(s_time_layer2A, buffer2A);
   text_layer_set_text(s_time_layer3, buffer3);
 }  
   
@@ -78,18 +100,19 @@ static void main_window_load(Window *window) {
   //Check for saved option
   //bool inverted = persist_read_bool(KEY_COLOR);
   
-  g_Color = GColorPictonBlue;
-  g_Color1 = GColorBlack;
-  
+  g_Color = GColorDukeBlue;
+  g_Color1 = GColorWhite;
+  g_Color2 = GColorDarkCandyAppleRed;
+
   GRect line_frame = GRect(0, 0, 144, 168);//Position for top block
   s_line_layer = layer_create(line_frame);  
   layer_set_update_proc(s_line_layer, line_layer_update_callback);
   layer_add_child(window_get_root_layer(window), s_line_layer);
   
   // Create time TextLayer
-  s_time_layer = text_layer_create(GRect(0, 42, 144, 168)); //Coordinates for Bottom Time display
+  s_time_layer = text_layer_create(GRect(0, 42, 144, 168)); //Coordinates for Time
   text_layer_set_background_color(s_time_layer, GColorClear);
-  text_layer_set_text_color(s_time_layer, g_Color); //Sets color for Time
+  text_layer_set_text_color(s_time_layer, g_Color2); //Sets color for Time
   text_layer_set_text(s_time_layer, "15:45");
   
     // Improve the layout to be more like a watchface
@@ -98,19 +121,29 @@ static void main_window_load(Window *window) {
   // Add it as a child layer to the Window's root layer
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
   
-  s_time_layer2 = text_layer_create(GRect(0, 120, 144, 168)); //Coordinates for Top Time display
+  s_time_layer2 = text_layer_create(GRect(0, 120, 100, 168)); //Coordinates for Date
   text_layer_set_background_color(s_time_layer2, GColorClear);
   text_layer_set_text_color(s_time_layer2, g_Color); //Sets color for Date
-  text_layer_set_text(s_time_layer2, "15:45");
+  text_layer_set_text(s_time_layer2, "AUGUST");
   
+  s_time_layer2A = text_layer_create(GRect(80, 120, 64, 168)); //Coordinates for Date Number
+  text_layer_set_background_color(s_time_layer2A, GColorClear);
+  text_layer_set_text_color(s_time_layer2A, g_Color2); //Sets color for Date Number
+  text_layer_set_text(s_time_layer2A, "15");
   
     // Improve the layout to be more like a watchface
   text_layer_set_text_alignment(s_time_layer2, GTextAlignmentCenter);
 
+  text_layer_set_text_alignment(s_time_layer2A, GTextAlignmentCenter);
+
+
   // Add it as a child layer to the Window's root layer
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer2));
 
-  s_time_layer3 = text_layer_create(GRect(0, 22, 144, 168)); //Coordinates for Top Time display
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer2A));
+
+
+  s_time_layer3 = text_layer_create(GRect(0, 22, 144, 168)); //Coordinates for day
   text_layer_set_background_color(s_time_layer3, GColorClear);
   text_layer_set_text_color(s_time_layer3, g_Color); //Sets color for day
   text_layer_set_text(s_time_layer3, "THURSDAY");
@@ -133,61 +166,85 @@ static void main_window_load(Window *window) {
 {
   char colorname[20];
   persist_read_string(COLOR_KEY, colorname, sizeof(colorname));
-  if(strcmp(colorname, "GColorPictonBlue") == 0){g_Color = GColorPictonBlue;}
-      else if(strcmp(colorname, "GColorDukeBlue") == 0){g_Color = GColorDukeBlue;}
-      else if(strcmp(colorname, "GColorWhite") == 0){g_Color = GColorWhite;}
-      else if(strcmp(colorname, "GColorLightGray") == 0){g_Color = GColorLightGray;}
-      else if(strcmp(colorname, "GColorYellow") == 0){g_Color = GColorYellow;}
-      else if(strcmp(colorname, "GColorChromeYellow") == 0){g_Color = GColorChromeYellow;}
-      else if(strcmp(colorname, "GColorRed") == 0){g_Color = GColorRed;}
-      else if(strcmp(colorname, "GColorDarkRed") == 0){g_Color = GColorDarkCandyAppleRed;}
-      else if(strcmp(colorname, "GColorGreen") == 0){g_Color = GColorGreen;}
-      else if(strcmp(colorname, "GColorIslamicGreen") == 0){g_Color = GColorIslamicGreen;}
-      else if(strcmp(colorname, "GColorPurple") == 0){g_Color = GColorPurple;}
-      else if(strcmp(colorname, "GColorImperial") == 0){g_Color = GColorImperialPurple;}
-
-      else if(strcmp(colorname, "GColorBlack") == 0){g_Color = GColorBlack;}
-      else if(strcmp(colorname, "GColorBrightGreen") == 0){g_Color = GColorBrightGreen;}
-      else if(strcmp(colorname, "GColorOxfordBlue") == 0){g_Color = GColorOxfordBlue;}
-      else if(strcmp(colorname, "GColorVividViolet") == 0){g_Color = GColorVividViolet;}
-
+  if(strcmp(colorname, "1") == 0){g_Color = GColorPictonBlue;}
+      else if(strcmp(colorname, "2") == 0){g_Color = GColorDukeBlue;}
+      else if(strcmp(colorname, "3") == 0){g_Color = GColorOxfordBlue;}
+      else if(strcmp(colorname, "4") == 0){g_Color = GColorWhite;}
+      else if(strcmp(colorname, "5") == 0){g_Color = GColorLightGray;}
+      else if(strcmp(colorname, "6") == 0){g_Color = GColorBlack;}
+      else if(strcmp(colorname, "7") == 0){g_Color = GColorYellow;}
+      else if(strcmp(colorname, "8") == 0){g_Color = GColorChromeYellow;}
+      else if(strcmp(colorname, "9") == 0){g_Color = GColorRed;}
+      else if(strcmp(colorname, "10") == 0){g_Color = GColorDarkCandyAppleRed;}
+      else if(strcmp(colorname, "11") == 0){g_Color = GColorBrightGreen;}
+      else if(strcmp(colorname, "12") == 0){g_Color = GColorGreen;}
+      else if(strcmp(colorname, "13") == 0){g_Color = GColorIslamicGreen;}
+      else if(strcmp(colorname, "14") == 0){g_Color = GColorVividViolet;}
+      else if(strcmp(colorname, "15") == 0){g_Color = GColorPurple;}
+      else if(strcmp(colorname, "16") == 0){g_Color = GColorImperialPurple;}
       else {g_Color = GColorPictonBlue;}
   
-  text_layer_set_text_color(s_time_layer, g_Color); //Sets color for Time
   text_layer_set_text_color(s_time_layer2, g_Color); //Sets color for Day
-  text_layer_set_text_color(s_time_layer3, g_Color); //Sets color for Date
+  text_layer_set_text_color(s_time_layer3, g_Color); //Sets color for month
 }
   
   if (persist_exists(COLORS_KEY)) 
 {
   char colorname[20];
   persist_read_string(COLORS_KEY, colorname, sizeof(colorname));
-    if(strcmp(colorname, "GColorPictonBlue") == 0){g_Color1 = GColorPictonBlue;}
-      else if(strcmp(colorname, "GColorDukeBlue") == 0){g_Color1 = GColorDukeBlue;}
-      else if(strcmp(colorname, "GColorWhite") == 0){g_Color1 = GColorWhite;}
-      else if(strcmp(colorname, "GColorLightGray") == 0){g_Color1 = GColorLightGray;}
-      else if(strcmp(colorname, "GColorYellow") == 0){g_Color1 = GColorYellow;}
-      else if(strcmp(colorname, "GColorChromeYellow") == 0){g_Color1 = GColorChromeYellow;}
-      else if(strcmp(colorname, "GColorRed") == 0){g_Color1 = GColorRed;}
-      else if(strcmp(colorname, "GColorDarkRed") == 0){g_Color1 = GColorDarkCandyAppleRed;}
-      else if(strcmp(colorname, "GColorGreen") == 0){g_Color1 = GColorGreen;}
-      else if(strcmp(colorname, "GColorIslamicGreen") == 0){g_Color1 = GColorIslamicGreen;}
-      else if(strcmp(colorname, "GColorPurple") == 0){g_Color1 = GColorPurple;}
-      else if(strcmp(colorname, "GColorImperial") == 0){g_Color1 = GColorImperialPurple;}
-
-      else if(strcmp(colorname, "GColorBlack") == 0){g_Color1 = GColorBlack;}
-      else if(strcmp(colorname, "GColorBrightGreen") == 0){g_Color1 = GColorBrightGreen;}
-      else if(strcmp(colorname, "GColorOxfordBlue") == 0){g_Color1 = GColorOxfordBlue;}
-      else if(strcmp(colorname, "GColorVividViolet") == 0){g_Color1 = GColorVividViolet;}
+  if(strcmp(colorname, "1") == 0){g_Color1 = GColorPictonBlue;}
+      else if(strcmp(colorname, "2") == 0){g_Color1 = GColorDukeBlue;}
+      else if(strcmp(colorname, "3") == 0){g_Color1 = GColorOxfordBlue;}
+      else if(strcmp(colorname, "4") == 0){g_Color1 = GColorWhite;}
+      else if(strcmp(colorname, "5") == 0){g_Color1 = GColorLightGray;}
+      else if(strcmp(colorname, "6") == 0){g_Color1 = GColorBlack;}
+      else if(strcmp(colorname, "7") == 0){g_Color1 = GColorYellow;}
+      else if(strcmp(colorname, "8") == 0){g_Color1 = GColorChromeYellow;}
+      else if(strcmp(colorname, "9") == 0){g_Color1 = GColorRed;}
+      else if(strcmp(colorname, "10") == 0){g_Color1 = GColorDarkCandyAppleRed;}
+      else if(strcmp(colorname, "11") == 0){g_Color1 = GColorBrightGreen;}
+      else if(strcmp(colorname, "12") == 0){g_Color1 = GColorGreen;}
+      else if(strcmp(colorname, "13") == 0){g_Color1 = GColorIslamicGreen;}
+      else if(strcmp(colorname, "14") == 0){g_Color1 = GColorVividViolet;}
+      else if(strcmp(colorname, "15") == 0){g_Color1 = GColorPurple;}
+      else if(strcmp(colorname, "16") == 0){g_Color1 = GColorImperialPurple;}
 
       else {g_Color1 = GColorPictonBlue;}
     
   layer_set_update_proc(s_line_layer, line_layer_update_callback);
 }
 
+    if (persist_exists(COLOR1_KEY)) 
+{
+  char colorname[20];
+  persist_read_string(COLOR1_KEY, colorname, sizeof(colorname));
+  if(strcmp(colorname, "1") == 0){g_Color2 = GColorPictonBlue;}
+      else if(strcmp(colorname, "2") == 0){g_Color2 = GColorDukeBlue;}
+      else if(strcmp(colorname, "3") == 0){g_Color2 = GColorOxfordBlue;}
+      else if(strcmp(colorname, "4") == 0){g_Color2 = GColorWhite;}
+      else if(strcmp(colorname, "5") == 0){g_Color2 = GColorLightGray;}
+      else if(strcmp(colorname, "6") == 0){g_Color2 = GColorBlack;}
+      else if(strcmp(colorname, "7") == 0){g_Color2 = GColorYellow;}
+      else if(strcmp(colorname, "8") == 0){g_Color2 = GColorChromeYellow;}
+      else if(strcmp(colorname, "9") == 0){g_Color2 = GColorRed;}
+      else if(strcmp(colorname, "10") == 0){g_Color2 = GColorDarkCandyAppleRed;}
+      else if(strcmp(colorname, "11") == 0){g_Color2 = GColorBrightGreen;}
+      else if(strcmp(colorname, "12") == 0){g_Color2 = GColorGreen;}
+      else if(strcmp(colorname, "13") == 0){g_Color2 = GColorIslamicGreen;}
+      else if(strcmp(colorname, "14") == 0){g_Color2 = GColorVividViolet;}
+      else if(strcmp(colorname, "15") == 0){g_Color2 = GColorPurple;}
+      else if(strcmp(colorname, "16") == 0){g_Color2 = GColorImperialPurple;}
+
+      else {g_Color2 = GColorPictonBlue;}
+    
+  text_layer_set_text_color(s_time_layer, g_Color2); //Sets color for Time
+  text_layer_set_text_color(s_time_layer2A, g_Color2); //Sets color for Day
+}
+  
 // Apply to TextLayer
 text_layer_set_font(s_time_layer, s_time_font);
 text_layer_set_font(s_time_layer2, s_time_font2);  
+text_layer_set_font(s_time_layer2A, s_time_font2);  
 text_layer_set_font(s_time_layer3, s_time_font2);  
   
 }
@@ -196,6 +253,9 @@ static void main_window_unload(Window *window) {
     // Destroy TextLayer
     text_layer_destroy(s_time_layer);
     text_layer_destroy(s_time_layer2);
+
+    text_layer_destroy(s_time_layer2A);
+
     text_layer_destroy(s_time_layer3);
 
     // Unload GFont
@@ -219,116 +279,246 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
   while(t != NULL) {
     // Which key was received?
     switch(t->key) {
+    case KEY_COLOR1:
+       //It's the KEY_COLOR key
+      if(strcmp(t->value->cstring, "1") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorPictonBlue;
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "2") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorDukeBlue;
+        
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }     
+      else if(strcmp(t->value->cstring, "3") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorOxfordBlue;
+        
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }    
+     else if(strcmp(t->value->cstring, "4") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorWhite;
+        
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }     
+      else if(strcmp(t->value->cstring, "5") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorLightGray;
+        
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }   
+      else if(strcmp(t->value->cstring, "6") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorBlack;
+        
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "7") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorYellow;
+        
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "8") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorChromeYellow;
+        
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "9") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorRed;
+
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "10") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorDarkCandyAppleRed;
+
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "11") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorBrightGreen;
+
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "12") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorGreen;
+
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "13") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorIslamicGreen;
+
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "14") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorVividViolet;
+
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "15") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorPurple;
+
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+
+      }
+      else if(strcmp(t->value->cstring, "16") == 0)
+      {
+        //Set and save the color 
+        g_Color2 = GColorImperialPurple;
+
+        persist_write_string(COLOR1_KEY, t->value->cstring);
+      }
+      else {g_Color2 = GColorPictonBlue;persist_write_string(COLOR1_KEY, t->value->cstring);}
+      break;
     case KEY_COLORS:
-      //It's the KEY_COLOR key
-      if(strcmp(t->value->cstring, "GColorPictonBlue") == 0)
+       //It's the KEY_COLOR key
+      if(strcmp(t->value->cstring, "1") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorPictonBlue;
         persist_write_string(COLORS_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorDukeBlue") == 0)
+      else if(strcmp(t->value->cstring, "2") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorDukeBlue;
         
         persist_write_string(COLORS_KEY, t->value->cstring);
       }     
-      else if(strcmp(t->value->cstring, "GColorWhite") == 0)
+      else if(strcmp(t->value->cstring, "3") == 0)
+      {
+        //Set and save the color 
+        g_Color1 = GColorOxfordBlue;
+        
+        persist_write_string(COLORS_KEY, t->value->cstring);
+      }    
+     else if(strcmp(t->value->cstring, "4") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorWhite;
         
         persist_write_string(COLORS_KEY, t->value->cstring);
-      }    
-     else if(strcmp(t->value->cstring, "GColorLightGray") == 0)
+      }     
+      else if(strcmp(t->value->cstring, "5") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorLightGray;
         
         persist_write_string(COLORS_KEY, t->value->cstring);
-      }     
-      else if(strcmp(t->value->cstring, "GColorYellow") == 0)
+      }   
+      else if(strcmp(t->value->cstring, "6") == 0)
+      {
+        //Set and save the color 
+        g_Color1 = GColorBlack;
+        
+        persist_write_string(COLORS_KEY, t->value->cstring);
+      }
+      else if(strcmp(t->value->cstring, "7") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorYellow;
         
         persist_write_string(COLORS_KEY, t->value->cstring);
-      }   
-      else if(strcmp(t->value->cstring, "GColorChromeYellow") == 0)
+      }
+      else if(strcmp(t->value->cstring, "8") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorChromeYellow;
         
         persist_write_string(COLORS_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorRed") == 0)
+      else if(strcmp(t->value->cstring, "9") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorRed;
-        
+
         persist_write_string(COLORS_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorDarkRed") == 0)
+      else if(strcmp(t->value->cstring, "10") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorDarkCandyAppleRed;
-        
-        persist_write_string(COLORS_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorGreen") == 0)
-      {
-        //Set and save the color 
-        g_Color1 = GColorGreen;
 
         persist_write_string(COLORS_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorIslamicGreen") == 0)
-      {
-        //Set and save the color 
-        g_Color1 = GColorIslamicGreen;
-
-        persist_write_string(COLORS_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorPurple") == 0)
-      {
-        //Set and save the color 
-        g_Color1 = GColorPurple;
-
-        persist_write_string(COLORS_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorImperial") == 0)
-      {
-        //Set and save the color 
-        g_Color1 = GColorImperialPurple;
-
-        persist_write_string(COLORS_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorBlack") == 0)
-      {
-        //Set and save the color 
-        g_Color1 = GColorBlack;
-
-        persist_write_string(COLORS_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorBrightGreen") == 0)
+      else if(strcmp(t->value->cstring, "11") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorBrightGreen;
 
         persist_write_string(COLORS_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorOxfordBlue") == 0)
+      else if(strcmp(t->value->cstring, "12") == 0)
       {
         //Set and save the color 
-        g_Color1 = GColorOxfordBlue;
+        g_Color1 = GColorGreen;
 
         persist_write_string(COLORS_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorVividViolet") == 0)
+      else if(strcmp(t->value->cstring, "13") == 0)
+      {
+        //Set and save the color 
+        g_Color1 = GColorIslamicGreen;
+
+        persist_write_string(COLORS_KEY, t->value->cstring);
+      }
+      else if(strcmp(t->value->cstring, "14") == 0)
       {
         //Set and save the color 
         g_Color1 = GColorVividViolet;
+
+        persist_write_string(COLORS_KEY, t->value->cstring);
+      }
+      else if(strcmp(t->value->cstring, "15") == 0)
+      {
+        //Set and save the color 
+        g_Color1 = GColorPurple;
+
+        persist_write_string(COLORS_KEY, t->value->cstring);
+      }
+      else if(strcmp(t->value->cstring, "16") == 0)
+      {
+        //Set and save the color 
+        g_Color1 = GColorImperialPurple;
 
         persist_write_string(COLORS_KEY, t->value->cstring);
       }
@@ -336,114 +526,114 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
       break;
     case KEY_COLOR:
       //It's the KEY_COLOR key
-      if(strcmp(t->value->cstring, "GColorPictonBlue") == 0)
+            if(strcmp(t->value->cstring, "1") == 0)
       {
         //Set and save the color 
         g_Color = GColorPictonBlue;
         persist_write_string(COLOR_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorDukeBlue") == 0)
+      else if(strcmp(t->value->cstring, "2") == 0)
       {
         //Set and save the color 
         g_Color = GColorDukeBlue;
         
         persist_write_string(COLOR_KEY, t->value->cstring);
       }     
-      else if(strcmp(t->value->cstring, "GColorWhite") == 0)
+      else if(strcmp(t->value->cstring, "3") == 0)
+      {
+        //Set and save the color 
+        g_Color = GColorOxfordBlue;
+        
+        persist_write_string(COLOR_KEY, t->value->cstring);
+      }    
+     else if(strcmp(t->value->cstring, "4") == 0)
       {
         //Set and save the color 
         g_Color = GColorWhite;
         
         persist_write_string(COLOR_KEY, t->value->cstring);
-      }    
-     else if(strcmp(t->value->cstring, "GColorLightGray") == 0)
+      }     
+      else if(strcmp(t->value->cstring, "5") == 0)
       {
         //Set and save the color 
         g_Color = GColorLightGray;
         
         persist_write_string(COLOR_KEY, t->value->cstring);
-      }     
-      else if(strcmp(t->value->cstring, "GColorYellow") == 0)
+      }   
+      else if(strcmp(t->value->cstring, "6") == 0)
+      {
+        //Set and save the color 
+        g_Color = GColorBlack;
+        
+        persist_write_string(COLOR_KEY, t->value->cstring);
+      }
+      else if(strcmp(t->value->cstring, "7") == 0)
       {
         //Set and save the color 
         g_Color = GColorYellow;
         
         persist_write_string(COLOR_KEY, t->value->cstring);
-      }   
-      else if(strcmp(t->value->cstring, "GColorChromeYellow") == 0)
+      }
+      else if(strcmp(t->value->cstring, "8") == 0)
       {
         //Set and save the color 
         g_Color = GColorChromeYellow;
         
         persist_write_string(COLOR_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorRed") == 0)
+      else if(strcmp(t->value->cstring, "9") == 0)
       {
         //Set and save the color 
         g_Color = GColorRed;
-        
+
         persist_write_string(COLOR_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorDarkRed") == 0)
+      else if(strcmp(t->value->cstring, "10") == 0)
       {
         //Set and save the color 
         g_Color = GColorDarkCandyAppleRed;
-        
-        persist_write_string(COLOR_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorGreen") == 0)
-      {
-        //Set and save the color 
-        g_Color = GColorGreen;
 
         persist_write_string(COLOR_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorIslamicGreen") == 0)
-      {
-        //Set and save the color 
-        g_Color = GColorIslamicGreen;
-
-        persist_write_string(COLOR_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorPurple") == 0)
-      {
-        //Set and save the color 
-        g_Color = GColorPurple;
-
-        persist_write_string(COLOR_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorImperial") == 0)
-      {
-        //Set and save the color 
-        g_Color = GColorImperialPurple;
-
-        persist_write_string(COLOR_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorBlack") == 0)
-      {
-        //Set and save the color 
-        g_Color = GColorBlack;
-
-        persist_write_string(COLOR_KEY, t->value->cstring);
-      }
-      else if(strcmp(t->value->cstring, "GColorBrightGreen") == 0)
+      else if(strcmp(t->value->cstring, "11") == 0)
       {
         //Set and save the color 
         g_Color = GColorBrightGreen;
 
         persist_write_string(COLOR_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorOxfordBlue") == 0)
+      else if(strcmp(t->value->cstring, "12") == 0)
       {
         //Set and save the color 
-        g_Color = GColorOxfordBlue;
+        g_Color = GColorGreen;
 
         persist_write_string(COLOR_KEY, t->value->cstring);
       }
-      else if(strcmp(t->value->cstring, "GColorVividViolet") == 0)
+      else if(strcmp(t->value->cstring, "13") == 0)
+      {
+        //Set and save the color 
+        g_Color = GColorIslamicGreen;
+
+        persist_write_string(COLOR_KEY, t->value->cstring);
+      }
+      else if(strcmp(t->value->cstring, "14") == 0)
       {
         //Set and save the color 
         g_Color = GColorVividViolet;
+
+        persist_write_string(COLOR_KEY, t->value->cstring);
+      }
+      else if(strcmp(t->value->cstring, "15") == 0)
+      {
+        //Set and save the color 
+        g_Color = GColorPurple;
+
+        persist_write_string(COLOR_KEY, t->value->cstring);
+      }
+      else if(strcmp(t->value->cstring, "16") == 0)
+      {
+        //Set and save the color 
+        g_Color = GColorImperialPurple;
 
         persist_write_string(COLOR_KEY, t->value->cstring);
       }
@@ -456,8 +646,9 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
   
-  text_layer_set_text_color(s_time_layer, g_Color); //Sets color for Time
+  text_layer_set_text_color(s_time_layer, g_Color2); //Sets color for Time
   text_layer_set_text_color(s_time_layer2, g_Color); //Sets color for Day
+  text_layer_set_text_color(s_time_layer2A, g_Color2); //Sets color for Day
   text_layer_set_text_color(s_time_layer3, g_Color); //Sets color for Date
   layer_set_update_proc(s_line_layer, line_layer_update_callback);
 }

@@ -7,7 +7,7 @@ Pebble.addEventListener("ready",
 Pebble.addEventListener("showConfiguration",
   function(e) {
     //Load the remote config page
-    Pebble.openURL("http://paliantech.com/pebble/BFconfig3F.html");
+    Pebble.openURL("http://paliantech.com/pebble/BFconfig3G.html");
   }
 );
 
@@ -19,7 +19,7 @@ Pebble.addEventListener("webviewclosed",
 
     //Send to Pebble, persist there
     Pebble.sendAppMessage(
-      {"KEY_COLOR": configuration.color , "KEY_COLORS": configuration.color1},
+      {"KEY_COLOR": configuration.color , "KEY_COLORS": configuration.color1, "KEY_COLOR1": configuration.color2},
       function(e) {
         console.log("Sending settings data...");
       },
