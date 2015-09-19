@@ -21,7 +21,6 @@ char *upcase(char *str)
 
 GColor getColor(char *colorname, GColor defaultColor)
 {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Converting color %s", colorname);
   if(strcmp(colorname, "1") == 0)       {  return GColorPictonBlue; }
   else if(strcmp(colorname, "2") == 0)  {  return GColorDukeBlue; }
   else if(strcmp(colorname, "3") == 0)  {  return GColorOxfordBlue; }
@@ -106,9 +105,9 @@ static void main_window_load(Window *window) {
   //Check for saved option
   //bool inverted = persist_read_bool(KEY_COLOR);
 
-  g_Color = GColorDukeBlue;
-  g_Color1 = GColorWhite;
-  g_Color2 = GColorDarkCandyAppleRed;
+  g_ColorWords = GColorDukeBlue;
+  g_ColorBackground = GColorWhite;
+  g_ColorNumbers = GColorDarkCandyAppleRed;
 
   GRect line_frame = GRect(0, 0, 144, 168);//Position for top block
   s_line_layer = layer_create(line_frame);
@@ -118,7 +117,7 @@ static void main_window_load(Window *window) {
   // Create time TextLayer
   s_time_layer = text_layer_create(GRect(0, 42, 144, 168)); //Coordinates for Time
   text_layer_set_background_color(s_time_layer, GColorClear);
-  text_layer_set_text_color(s_time_layer, g_Color2); //Sets color for Time
+  text_layer_set_text_color(s_time_layer, g_ColorNumbers); //Sets color for Time
   text_layer_set_text(s_time_layer, "15:45");
 
     // Improve the layout to be more like a watchface
@@ -129,12 +128,12 @@ static void main_window_load(Window *window) {
 
   s_time_layer2 = text_layer_create(GRect(0, 120, 100, 168)); //Coordinates for Date
   text_layer_set_background_color(s_time_layer2, GColorClear);
-  text_layer_set_text_color(s_time_layer2, g_Color); //Sets color for Date
+  text_layer_set_text_color(s_time_layer2, g_ColorWords); //Sets color for Date
   text_layer_set_text(s_time_layer2, "AUGUST");
 
   s_time_layer2A = text_layer_create(GRect(80, 120, 64, 168)); //Coordinates for Date Number
   text_layer_set_background_color(s_time_layer2A, GColorClear);
-  text_layer_set_text_color(s_time_layer2A, g_Color2); //Sets color for Date Number
+  text_layer_set_text_color(s_time_layer2A, g_ColorNumbers); //Sets color for Date Number
   text_layer_set_text(s_time_layer2A, "15");
 
     // Improve the layout to be more like a watchface
@@ -151,7 +150,7 @@ static void main_window_load(Window *window) {
 
   s_time_layer3 = text_layer_create(GRect(0, 22, 144, 168)); //Coordinates for day
   text_layer_set_background_color(s_time_layer3, GColorClear);
-  text_layer_set_text_color(s_time_layer3, g_Color); //Sets color for day
+  text_layer_set_text_color(s_time_layer3, g_ColorWords); //Sets color for day
   text_layer_set_text(s_time_layer3, "THURSDAY");
 
     // Improve the layout to be more like a watchface
@@ -172,17 +171,19 @@ static void main_window_load(Window *window) {
 {
   char colorname[20];
   persist_read_string(COLOR_KEY, colorname, sizeof(colorname));
-  g_Color = getColor(colorname, GColorPictonBlue);
+  g_ColorWords = getColor(colorname, GColorPictonBlue);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Read persisted word color %s", colorname);
 
-  text_layer_set_text_color(s_time_layer2, g_Color); //Sets color for Day
-  text_layer_set_text_color(s_time_layer3, g_Color); //Sets color for month
+  text_layer_set_text_color(s_time_layer2, g_ColorWords); //Sets color for Day
+  text_layer_set_text_color(s_time_layer3, g_ColorWords); //Sets color for month
 }
 
   if (persist_exists(COLORS_KEY))
 {
   char colorname[20];
   persist_read_string(COLORS_KEY, colorname, sizeof(colorname));
-  g_Color1 = getColor(colorname, GColorPictonBlue);
+  g_ColorBackground = getColor(colorname, GColorPictonBlue);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Read persisted background color %s", colorname);
 
   layer_set_update_proc(s_line_layer, line_layer_update_callback);
 }
@@ -191,10 +192,11 @@ static void main_window_load(Window *window) {
 {
   char colorname[20];
   persist_read_string(COLOR1_KEY, colorname, sizeof(colorname));
-  g_Color2 = getColor(colorname, GColorPictonBlue);
+  g_ColorNumbers = getColor(colorname, GColorPictonBlue);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Read persisted number color %s", colorname);
 
-  text_layer_set_text_color(s_time_layer, g_Color2); //Sets color for Time
-  text_layer_set_text_color(s_time_layer2A, g_Color2); //Sets color for Day
+  text_layer_set_text_color(s_time_layer, g_ColorNumbers); //Sets color for Time
+  text_layer_set_text_color(s_time_layer2A, g_ColorNumbers); //Sets color for Day
 }
 
 // Apply to TextLayer
@@ -238,23 +240,26 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     case KEY_COLOR1:
        //It's the KEY_COLOR key
        //Set and save the color
-       g_Color2 = getColor(t->value->cstring, GColorPictonBlue);
+       g_ColorNumbers = getColor(t->value->cstring, GColorPictonBlue);
        persist_write_string(COLOR1_KEY, t->value->cstring);
+       APP_LOG(APP_LOG_LEVEL_DEBUG, "Received number color: %s", t->value->cstring);
 
       break;
     case KEY_COLORS:
        //It's the KEY_COLOR key
        //Set and save the color
-       g_Color1 = getColor(t->value->cstring, GColorPictonBlue);
+       g_ColorBackground = getColor(t->value->cstring, GColorPictonBlue);
        persist_write_string(COLORS_KEY, t->value->cstring);
+       APP_LOG(APP_LOG_LEVEL_DEBUG, "Received background color: %s", t->value->cstring);
 
       break;
     case KEY_COLOR:
       //It's the KEY_COLOR key
       //It's the KEY_COLOR key
       //Set and save the color
-      g_Color = getColor(t->value->cstring, GColorPictonBlue);
+      g_ColorWords = getColor(t->value->cstring, GColorPictonBlue);
       persist_write_string(COLOR_KEY, t->value->cstring);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Received word color: %s", t->value->cstring);
 
       break;
           default:
@@ -264,10 +269,10 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
 
-  text_layer_set_text_color(s_time_layer, g_Color2); //Sets color for Time
-  text_layer_set_text_color(s_time_layer2, g_Color); //Sets color for Day
-  text_layer_set_text_color(s_time_layer2A, g_Color2); //Sets color for Day
-  text_layer_set_text_color(s_time_layer3, g_Color); //Sets color for Date
+  text_layer_set_text_color(s_time_layer, g_ColorNumbers); //Sets color for Time
+  text_layer_set_text_color(s_time_layer2, g_ColorWords); //Sets color for Day
+  text_layer_set_text_color(s_time_layer2A, g_ColorNumbers); //Sets color for Day
+  text_layer_set_text_color(s_time_layer3, g_ColorWords); //Sets color for Date
   layer_set_update_proc(s_line_layer, line_layer_update_callback);
 }
 
