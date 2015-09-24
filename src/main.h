@@ -10,9 +10,8 @@ static GFont s_time_font2;
 
 static Layer *s_line_layer;
 
- GColor g_Color;
+ GColor g_ColorWords;
 
- GColor g_Color1;
+ GColor g_ColorBackground;
 
- GColor g_Color2;
-
+ GColor g_ColorNumbers;
