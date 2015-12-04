@@ -1,3 +1,5 @@
+var url = 'https://rawgit.com/chrira/BlueFuturistic/load-actual-colors/config.html';
+
 Pebble.addEventListener("ready",
   function(e) {
     console.log("PebbleKit JS ready!");
@@ -7,7 +9,7 @@ Pebble.addEventListener("ready",
 Pebble.addEventListener("showConfiguration",
   function(e) {
     //Load the remote config page
-    Pebble.openURL("http://paliantech.com/pebble/BFconfig3G.html");
+    Pebble.openURL(url);
   }
 );
 
